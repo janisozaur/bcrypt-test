@@ -35,7 +35,7 @@ int main()
     _keyBlobType = BCRYPT_RSAFULLPRIVATE_BLOB;
     char* key_mut = malloc(strlen(key));
     memcpy(key_mut, key, strlen(key));
-    status = BCryptImportKeyPair(_hAlg, NULL, _keyBlobType, &_hKey, (PUCHAR)key_mut, strlen(key_mut), 0ul);
+    status = BCryptImportKeyPair(_hAlg, NULL, _keyBlobType, &_hKey, (PUCHAR)key_mut, (ULONG)strlen(key_mut), 0ul);
     printf("0x%08lx\n", status);
     free(key_mut);
     return 0;
