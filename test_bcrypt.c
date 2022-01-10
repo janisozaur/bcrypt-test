@@ -31,12 +31,12 @@ int main()
     memset(&_hAlg, 0, sizeof(BCRYPT_KEY_HANDLE));
     memset(&_hKey, 0, sizeof(BCRYPT_KEY_HANDLE));
     status = BCryptOpenAlgorithmProvider(&_hAlg, BCRYPT_RSA_ALGORITHM, NULL, 0);
-    printf("0x%08x\n", status);
+    printf("0x%08lx\n", status);
     _keyBlobType = BCRYPT_RSAFULLPRIVATE_BLOB;
-    uint8_t* key_mut = malloc(strlen(key));
+    char* key_mut = malloc(strlen(key));
     memcpy(key_mut, key, strlen(key));
-    status = BCryptImportKeyPair(_hAlg, NULL, _keyBlobType, &_hKey, key_mut, strlen(key_mut), 0);
-    printf("0x%08x\n", status);
+    status = BCryptImportKeyPair(_hAlg, NULL, _keyBlobType, &_hKey, (PUCHAR)key_mut, strlen(key_mut), 0);
+    printf("0x%08lx\n", status);
     free(key_mut);
     return 0;
 }
