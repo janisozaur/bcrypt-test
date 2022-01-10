@@ -1,5 +1,8 @@
-#include <cstdio>
-#include <vector>
+// i686-w64-mingw32-gcc test_bcrypt.c -lbcrypt
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #include <windows.h>
 #include <bcrypt.h>
 
@@ -21,14 +24,19 @@ static const char* key = "-----BEGIN RSA PRIVATE KEY-----\n"
 
 int main()
 {
-    BCRYPT_KEY_HANDLE _hAlg{};
-    BCRYPT_KEY_HANDLE _hKey{};
-    LPCWSTR _keyBlobType{};
-    auto status = BCryptOpenAlgorithmProvider(&_hAlg, BCRYPT_RSA_ALGORITHM, NULL, 0);
+    BCRYPT_KEY_HANDLE _hAlg;
+    BCRYPT_KEY_HANDLE _hKey;
+    LPCWSTR _keyBlobType;
+    NTSTATUS status;
+    memset(&_hAlg, 0, sizeof(BCRYPT_KEY_HANDLE));
+    memset(&_hKey, 0, sizeof(BCRYPT_KEY_HANDLE));
+    status = BCryptOpenAlgorithmProvider(&_hAlg, BCRYPT_RSA_ALGORITHM, NULL, 0);
     printf("0x%08x\n", status);
     _keyBlobType = BCRYPT_RSAFULLPRIVATE_BLOB;
-    std::vector<unsigned char> key_mut(key, key + strlen(key));
-    status = BCryptImportKeyPair(_hAlg, NULL, _keyBlobType, &_hKey, key_mut.data(), key_mut.size(), 0);
+    uint8_t* key_mut = malloc(strlen(key));
+    memcpy(key_mut, key, strlen(key));
+    status = BCryptImportKeyPair(_hAlg, NULL, _keyBlobType, &_hKey, key_mut, strlen(key_mut), 0);
     printf("0x%08x\n", status);
+    free(key_mut);
     return 0;
 }
