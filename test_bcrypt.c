@@ -24,6 +24,7 @@ static const char* key = "-----BEGIN RSA PRIVATE KEY-----\n"
 
 int main()
 {
+    printf("test_bcrypt\n");
     BCRYPT_KEY_HANDLE _hAlg;
     BCRYPT_KEY_HANDLE _hKey;
     LPCWSTR _keyBlobType;
