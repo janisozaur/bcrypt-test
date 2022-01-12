@@ -67,7 +67,9 @@ int main()
 {
     printf("BCryptExportKey_RSA\n");
     bool error = false;
+    printf("RSAFULLPRIVATE_BLOB\n");
     error |= test_key_export(BCRYPT_RSAFULLPRIVATE_BLOB);
+    printf("RSAPUBLIC_BLOB\n");
     error |= test_key_export(BCRYPT_RSAPUBLIC_BLOB);
     printf("BCryptExportKey_RSA done\n");
     return (int)error;
