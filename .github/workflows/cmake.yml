@@ -36,4 +36,5 @@ jobs:
       run: |
         Release/a.exe
         Release/b.exe
+        Release/c.exe
       
