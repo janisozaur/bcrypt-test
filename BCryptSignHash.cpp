@@ -1,3 +1,7 @@
+// x86_64-w64-mingw32-c++ BCryptSignHash.cpp -lbcrypt -std=c++17
+//
+// cl BCryptSignHash.cpp bcrypt.lib /std:c++17 /Fe:a.exe
+
 #include <cstdint>
 #include <cstdio>
 #include <string_view>
