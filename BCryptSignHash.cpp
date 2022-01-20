@@ -83,6 +83,11 @@ int main()
         CngLogError("BCryptSignHash second", status);
         delete[] pbSignature;
     }
+    cbSignature = 128; // We know beforehand it should be 128, do a test if it work when we provide enough data in output
+    auto pbSignature = new BYTE[cbSignature];
+    BCryptSignHash(_hKey, &paddingInfo, hash, _tmp_hash_len, pbSignature, cbSignature, &cbSignature, BCRYPT_PAD_PKCS1);
+    CngLogError("BCryptSignHash third", status);
+    delete[] pbSignature;
     status = BCryptDestroyKey(_hKey);
     CngLogError("BCryptDestroyKey", status);
     status = BCryptCloseAlgorithmProvider(_hAlg, 0);
