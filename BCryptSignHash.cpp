@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <string_view>
 #include <string>
+
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <wincrypt.h>
 #include <bcrypt.h>
@@ -40,10 +42,8 @@ static uint8_t _tmp_key[] = {
     0xa0, 0x6d, 0x81
 };
 static const unsigned int _tmp_key_len = 603;
-static uint8_t hash[] = {
-    0x4b, 0x3a, 0x74, 0x3a, 0x84, 0x95, 0xf8, 0xc5, 0x4a, 0xc6, 0x19, 0x29, 0xe5, 0xb4, 0x5a, 0x94,
-    0x49, 0xc3, 0x82, 0x73, 0x3e, 0x26, 0xf2, 0x6f, 0xaf, 0xa4, 0x40, 0xfa, 0x59, 0xc3, 0x9e, 0x2f
-};
+static uint8_t hash[] = { 0x4b, 0x3a, 0x74, 0x3a, 0x84, 0x95, 0xf8, 0xc5, 0x4a, 0xc6, 0x19, 0x29, 0xe5, 0xb4, 0x5a, 0x94,
+                          0x49, 0xc3, 0x82, 0x73, 0x3e, 0x26, 0xf2, 0x6f, 0xaf, 0xa4, 0x40, 0xfa, 0x59, 0xc3, 0x9e, 0x2f };
 static unsigned int _tmp_hash_len = 32;
 
 constexpr static bool NT_SUCCESS(NTSTATUS status)
@@ -66,7 +66,7 @@ int main()
     printf("BCryptSignHash\n");
     BCRYPT_KEY_HANDLE _hKey{};
     BCRYPT_KEY_HANDLE _hAlg{};
-    LPCWSTR _keyBlobType{BCRYPT_RSAFULLPRIVATE_BLOB};
+    LPCWSTR _keyBlobType{ BCRYPT_RSAFULLPRIVATE_BLOB };
     auto status = BCryptOpenAlgorithmProvider(&_hAlg, BCRYPT_RSA_ALGORITHM, NULL, 0);
     CngLogError("BCryptOpenAlgorithmProvider", status);
     status = BCryptImportKeyPair(_hAlg, NULL, _keyBlobType, &_hKey, _tmp_key, static_cast<ULONG>(_tmp_key_len), 0);
@@ -74,7 +74,17 @@ int main()
     BCRYPT_PKCS1_PADDING_INFO paddingInfo{ BCRYPT_SHA256_ALGORITHM };
     DWORD cbSignature{};
     status = BCryptSignHash(_hKey, &paddingInfo, hash, _tmp_hash_len, NULL, 0, &cbSignature, BCRYPT_PAD_PKCS1);
-    CngLogError("BCryptSignHash", status);
+    CngLogError("BCryptSignHash first", status);
+    printf("cbSignature: %lu\n", cbSignature);
+    if (cbSignature != 0)
+    {
+        auto pbSignature = new BYTE[cbSignature];
+        BCryptSignHash(_hKey, &paddingInfo, hash, _tmp_hash_len, pbSignature, cbSignature, &cbSignature, BCRYPT_PAD_PKCS1);
+        CngLogError("BCryptSignHash second", status);
+        delete[] pbSignature;
+    }
+    status = BCryptDestroyKey(_hKey);
+    CngLogError("BCryptDestroyKey", status);
     status = BCryptCloseAlgorithmProvider(_hAlg, 0);
     CngLogError("BCryptCloseAlgorithmProvider", status);
 }
